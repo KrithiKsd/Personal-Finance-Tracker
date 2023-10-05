@@ -7,6 +7,22 @@
         Users can visualize their total monthly expenses in a graph
         Integration with a charting library for data visualization
 
+API Endpoints
+
+The following API endpoints are created:
+
+    GET api/category Get a list of all categories
+    GET /api/category/{id} Get a category by ID
+    POST /api/category Create a new category
+    PUT /api/category/{id} Update an existing category by ID
+    DELETE /api/category/{id} Delete a category by ID
+
+    GET /api/expenses Get a list of all expenses
+    GET /api/expenses/{id} Get a expense by ID
+    POST /api/expenses Create a new expense
+    PUT /api/expenses/{id} Update an existing expense by ID
+    DELETE /api/expenses/{id} Delete a expense by ID
+
 **Technologies:**  
 
        React for the frontend
