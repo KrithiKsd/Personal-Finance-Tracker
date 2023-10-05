@@ -1,48 +1,83 @@
 import React, { Component } from 'react';
-import Chart from 'chart.js/auto';
-import { Line } from "react-chartjs-2";
+import { Line } from 'react-chartjs-2';
 import AppNav from './AppNav';
-import { Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
+import { Container } from 'reactstrap';
+import "chart.js/auto";
 
-const state = {
-    labels: ['January', 'February', 'March',
-             'April', 'May','June','July','August','September','October','November','December'],
-    datasets: [
-      {
-        label: 'Personal Budget Tracker',
-        fill: false,
-        lineTension: 0.5,
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(0,0,0,1)',
-        borderWidth: 2,
-        data: [65, 59, 80, 81, 56, 20, 18, 75, 32, 45, 94, 30]
-      }
-    ]
+
+export default class Graph extends Component {
+  constructor() {
+    super();
+    this.state = {
+        expenses:[],
+    };
   }
 
-  export default class Graph extends Component {
-    render() {
-      return (
-        
-        <div>
-            <div><AppNav/></div>
-            <Container> 
+  async componentDidMount(){
+    const responseExp= await fetch('api/expenses');
+    const bodyExp= await responseExp.json();
+    this.setState({expenses : bodyExp, isLoading :false});
+    console.log(bodyExp);
+}
+
+  calculateExpensesByMonth = () => {
+    const { expenses } = this.state;
+    const expenseByMonth = Array(12).fill(0); // Initialize an array to store expenses for each month
+
+    expenses.forEach((expense) => {
+      const expenseDate = new Date(expense.expenseDate);
+      const monthIndex = expenseDate.getMonth(); // Get the month index (0 to 11)
+      expenseByMonth[monthIndex] += expense.expenseAmount;
+    });
+
+    return expenseByMonth;
+  };
+
+  render() {
+    const {expenses, isLoading} = this.state;
+    if(isLoading)
+        return (<div>Loading..</div>);
+
+    const expenseByMonth = this.calculateExpensesByMonth();
+
+    const data = {
+      labels: [
+        'January', 'February', 'March',
+        'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
+      ],
+      datasets: [
+        {
+          label: 'Personal Budget Tracker',
+          fill: false,
+          lineTension: 0.5,
+          backgroundColor: 'rgba(75,192,192,1)',
+          borderColor: 'rgba(0,0,0,1)',
+          borderWidth: 2,
+          data: expenseByMonth, // Use the calculated expense data here
+        }
+      ]
+    };
+
+    return (
+      <div>
+        <div><AppNav/></div>
+        <Container> 
           <Line
-            data={state}
+            data={data}
             options={{
               maintainAspectRatio: false,
-              title:{
-                display:true,
-                text:'Average Rainfall per month',
-                fontSize:50
+              title: {
+                display: true,
+                text: 'Monthly Expense Tracker',
+                fontSize: 20 // Reduce the font size for the title
               },
-              legend:{
-                display:false
+              legend: {
+                display: false
               }
             }}
           />
-          </Container>
-        </div>
-      );
-    }
+        </Container>
+      </div>
+    );
   }
+}

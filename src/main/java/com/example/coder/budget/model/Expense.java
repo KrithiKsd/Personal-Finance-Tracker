@@ -31,6 +31,8 @@ public class Expense {
 
     private String location;
 
+    private Double expenseAmount;
+
 
     //many expenses can have one category
     @ManyToOne
